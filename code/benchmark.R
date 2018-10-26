@@ -11,7 +11,7 @@ View(fitness)
 
 x <- fitness$Age
 y <- fitness$Weight
-nBoot <- 4000
+nBoot <- 1000
 
 
 # Functions Timing --------------------------------------------------------

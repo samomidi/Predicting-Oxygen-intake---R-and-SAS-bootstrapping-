@@ -1,6 +1,3 @@
-library(parallel)
-
-
 lmBootOptimized <- function(inputData, nBoot){
   # Purpose:
   #   Optimize the bootstrapping code
@@ -10,19 +7,13 @@ lmBootOptimized <- function(inputData, nBoot){
   # Output:
   #   bootResults - matrix
   
-  # # Available cores
-  # nCores <- detectCores()
-  # 
-  # # Create a cluster
-  # myClust <- makeCluster(nCores - 1, type = "PSOCK") 
-  
   # Calculating the number of rows
   numberOfRows <- nrow(inputData)
   
   # Initializing bootResults
   bootResults <- matrix(data = NA, nrow = nBoot, ncol = 2)
   
-  for(i in 1:nBoot){
+  for(i in 1:nBoot) {
     # resample our data with replacement
     bootData <- inputData[sample(1:numberOfRows, numberOfRows, replace = T), ]
     
@@ -41,12 +32,9 @@ lmBootOptimized <- function(inputData, nBoot){
   } # end of if loop
   
   # Output the result in a csv file
+  colnames(bootResults) <- c("Intercept", "Slope")
   write_csv(x = as.data.frame(bootResults), path = 'BootResults/OptBootRes')
-  
-  
-  # stopCluster(myClust)
 }
-
 
 # Changes done:
 # Calculated the numbver of rows once before the loop instead of nBoot times

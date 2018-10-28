@@ -191,6 +191,8 @@ lmBootOpt.res <- lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(
 lmBootPar.res <- lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
 lmBootPar.res <- plyr::ldply(lmBootPar.res)
 
+lm.res <- coef(lm(y ~ x))
+
 View(lmBoot.res)
 View(lmBootOpt.res)
 View(lmBootPar.res)
@@ -198,6 +200,15 @@ View(lmBootPar.res)
 
 # Estimations Plots -------------------------------------------------------
 
+ggplot(fitness, aes(x = fitness$Age, y = fitness$Weight)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x)
+
+ggplot() +
+  geom_point(data = fitness, aes(x = fitness$Age, y = fitness$Weight)) +
+  geom_abline(intercept = lmBootPar.res[10, 1], slope = lmBootPar.res[10, 2], colour = "red") +
+  geom_abline(intercept = lm.res[1], slope = lm.res[2], colour = "blue")
+  
 
 # Testing -----------------------------------------------------------------
 

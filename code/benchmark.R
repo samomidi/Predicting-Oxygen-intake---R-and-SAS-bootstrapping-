@@ -2,6 +2,7 @@ library(microbenchmark)
 library(boot)
 library(profvis)
 library(tidyverse)
+library(ggplot2)
 
 source('code/lmBoot.r')
 source('code/lmBootOptimized.R')
@@ -100,21 +101,50 @@ profvis({
 
 # Plots -------------------------------------------------------------------
 
-# Get the timing of the lmBootParallel for 10 data sizes
-numOfMeasurements <- 3
-lmBootParallelTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 2)
-colnames(lmBootParallelTimings) <- c("size", "time")
+numOfMeasurements <- 5
+
+# Get the timing of the original lmBoot
+lmBootTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 3)
+colnames(lmBootTimings) <- c("group", "size", "time")
+for(i in 1:numOfMeasurements) {
+  size <- 10 ^ i
+  time <- system.time(lmBoot(data.frame(x, y) , size))[3]
+  lmBootTimings[i, ] <- c("lmBoot", size, time)
+}
+
+# Get the timing of the lmBootOptimised
+lmBootOptimizedTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 3)
+colnames(lmBootOptimizedTimings) <- c("group", "size", "time")
+for(i in 1:numOfMeasurements) {
+  size <- 10 ^ i
+  time <- system.time(lmBootOptimized(
+    inputData = fitness, nBoot = size, xIndex = c(2,3,5), yIndex = 1))[3]
+  lmBootOptimizedTimings[i, ] <- c("lmBootOptimized", size, time)
+}
+
+# Get the timing of the lmBootParallel
+lmBootParallelTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 3)
+colnames(lmBootParallelTimings) <- c("group", "size", "time")
 for(i in 1:numOfMeasurements) {
   size <- 10 ^ i
   time <- system.time(lmBootParallel(
     inputData = fitness, nBoot = size, xIndex = c(2,3,5), yIndex = 1))[3]
-  lmBootParallelTimings[i, ] <- c(size, time)
+  lmBootParallelTimings[i, ] <- c("lmBootParallel", size, time)
 }
 
-lmBootParallelTimings[, 2] <- lmBootParallelTimings[, 2] / 1000
+plotTimings <- as.data.frame(rbind(lmBootTimings, lmBootOptimizedTimings, lmBootParallelTimings))
+plotTimings <- plotTimings %>% mutate_at(vars(-group), function(x) as.numeric(as.character(x)))
+plotTimings$time <- round(x = plotTimings$time, digits = 8)
 
-plot(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
-lines(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
+ggplot(plotTimings, aes(x = size, y = time, group = group, colour = group)) + 
+  geom_point() + 
+  geom_line()
+
+# test.plot <- plotTimings %>% filter(group == "lmBoot")
+# plot(test.plot$size, test.plot$time)
+# 
+# plot(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
+# lines(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
 
 # Add a plot showing the points of x and y and the line using the retured betas
 

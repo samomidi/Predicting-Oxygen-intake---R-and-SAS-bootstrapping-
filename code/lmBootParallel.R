@@ -19,7 +19,18 @@ bootLM <- function(index, inputData, numberOfRows, xIndex, yIndex) {
 }
 
 lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
+  # Purpose:
+  #   Optimize the bootstrapping code using parallel programming
+  # Inputs:
+  #   inputData - data frame
+  #   nBoot - integer - number of resampling
+  #   xIndex - list of integers - the indexes of explanatory variables
+  #   yIndex - integer - index of the response variable
+  # Output:
+  #   bootResults - matrix - contains the y-intercept and the slopes of the 
+  #   explanatory variables
   # Calculating the number of rows
+  
   numberOfRows <- nrow(inputData)
   
   # Initialising the data
@@ -35,7 +46,7 @@ lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
   registerDoParallel(myClust)
   
   # Initializing bootResults
-  bootResults <- matrix(data = NA, nrow = nBoot, ncol = 2)
+  bootResults <- matrix(data = NA, nrow = nBoot, ncol = (length(xIndex) + 1))
   bootResults <- parLapply(myClust, 1:nBoot, bootLM, inputData = as.matrix(bindedData), 
                            numberOfRows = numberOfRows, xIndex = xIndex + 1, yIndex = yIndex + 1)
   

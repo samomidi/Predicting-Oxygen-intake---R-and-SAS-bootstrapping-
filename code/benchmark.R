@@ -9,22 +9,26 @@ source('code/lmBootParallel.R')
 
 fitness <- read_csv('data/fitness.csv')
 
-x <- fitness$Age
-y <- fitness$Weight
+x <- fitness$Weight
+y <- fitness$Age
 nBoot <- 1e3
+nCores <- detectCores()
 
 
 # Functions Timing --------------------------------------------------------
 
 # Comparing the default lmBoot with the optimized version
 overallPerformance <- system.time(lmBoot(data.frame(x, y) , nBoot))
-overallPerformance.opt <- system.time(lmBootOptimized(data.frame(x, y) , nBoot))
+overallPerformance.opt <- system.time(lmBootOptimized(
+  inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1))
 overallDifferences <- overallPerformance[[3]] - overallPerformance.opt[[3]]
 cat("Overall code was improved by ", overallDifferences, "s")
 
 # Comparing the optimized version with the parallel version
-overallPerformance.opt <- system.time(lmBootOptimized(data.frame(x, y) , nBoot))
-overallPerformance.par <- system.time(lmBootParallel(data.frame(x, y) , nBoot))
+overallPerformance.opt <- system.time(lmBootOptimized(
+  inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1))
+overallPerformance.par <- system.time(lmBootParallel(
+  inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1))
 overallDifferences <- overallPerformance.opt[[3]] - overallPerformance.par[[3]]
 cat("Overall code was improved by ", overallDifferences, "s")
 
@@ -40,14 +44,14 @@ summaryRprof(lmBootRprofPath)
 # lmBootOptimized
 lmBootOptimizedRprofPath <- 'Profiling/lmBootOptimizedRprof'
 Rprof(lmBootOptimizedRprofPath)
-lmBootOptimized(data.frame(x, y) , nBoot)
+lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
 Rprof()
 summaryRprof(lmBootOptimizedRprofPath)
 
 # lmBootParallel
 lmBootParallelRprofPath <- 'Profiling/lmBootParallelRprof'
 Rprof(lmBootParallelRprofPath)
-lmBootParallel(data.frame(x, y) , nBoot)
+lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
 Rprof()
 summaryRprof(lmBootParallelRprofPath)
 
@@ -56,13 +60,14 @@ summaryRprof(lmBootParallelRprofPath)
 # Default with optimised
 microbenchmark(
   lmBoot(data.frame(x, y) , nBoot),
-  lmBootOptimized(data.frame(x, y) , nBoot)
+  lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1),
+  times = 10
 )
 
 # optimised with parallel
 microbenchmark(
-  lmBootOptimized(data.frame(x, y) , nBoot),
-  lmBootParallel(data.frame(x, y) , nBoot),
+  lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1),
+  lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1),
   times = 10
 )
 
@@ -74,33 +79,35 @@ profvis({
 })
 
 profvis({
-  lmBootOptimized(data.frame(x, y) , nBoot)
+  lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
 })
 
 profvis({
-  View(lmBootParallel(data.frame(x, y) , nBoot))
+  lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
 })
+
+bootLM.performance.test <- function() {
+  numRows <- nrow(fitness)
+  bindedData <- as.matrix(cbind(1, fitness))
+  for(i in 1:nBoot){
+    bootLM(i, bindedData, numRows, c(2,3,5), 1)
+  }
+}
 
 profvis({
   bootLM.performance.test()
 })
 
-bootLM.performance.test <- function() {
-  numRows <- nrow(data.frame(x, y))
-  for(i in 1:nBoot){
-    bootLM(i, data.frame(x, y), numRows)
-  }
-}
-
-
 # Plots -------------------------------------------------------------------
 
 # Get the timing of the lmBootParallel for 10 data sizes
-lmBootParallelTimings <- matrix(data = NA, nrow = 3, ncol = 2)
+numOfMeasurements <- 3
+lmBootParallelTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 2)
 colnames(lmBootParallelTimings) <- c("size", "time")
-for(i in 1:3) {
+for(i in 1:numOfMeasurements) {
   size <- 10 ^ i
-  time <- system.time(lmBootParallel(data.frame(x, y) , size))[3]
+  time <- system.time(lmBootParallel(
+    inputData = fitness, nBoot = size, xIndex = c(2,3,5), yIndex = 1))[3]
   lmBootParallelTimings[i, ] <- c(size, time)
 }
 
@@ -113,35 +120,42 @@ lines(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
 
 # R boot benchmark --------------------------------------------------------
 
-linModel <- function(d, w){
+linModel <- function(d, w, xIndex, yIndex){
   d <- d[w,  ]
-  r <- cor(x = d$x, y = d$y)
-  b <- r * sd(x = d$y) / sd(x = d$x)
-  a <- mean(d$y) - (b * mean(d$x))
-  return(c(a, b))
+  bindedData <- as.matrix(cbind(1, d))
+  Xmat <- bindedData[, c(1, xIndex + 1)]
+  Ymat <- bindedData[, yIndex + 1]
+  beta <- solve(t(Xmat)%*%Xmat)%*%t(Xmat)%*%Ymat
+  return(beta)
 }
 
 microbenchmark(
-  boot(data = data.frame(x, y), statistic = linModel, R = 1e3, ncpus = 3),
-  lmBootParallel(data.frame(x, y) , nBoot),
+  boot(data = fitness, statistic = linModel, R = nBoot, ncpus = nCores, 
+       xIndex = c(2,3,5), yIndex = 1),
+  lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1),
   times = 2
 )
 
-system.time(boot(data = data.frame(x, y), statistic = linModel, R = 1e5, ncpus = 4))
-system.time(lmBootParallel(data.frame(x, y) , 1e5))
+system.time(boot(data = fitness, statistic = linModel, R = nBoot, ncpus = nCores, 
+                 xIndex = c(2,3,5), yIndex = 1))
+system.time(lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1))
 
-result.boot <- boot(data = data.frame(x, y), statistic = linModel, R = 1e4, ncpus = 4)
-par.boot <- lmBootParallel(data.frame(x, y) , 1e4)
+result.boot <- boot(data = fitness, statistic = linModel, R = nBoot, ncpus = nCores, 
+                    xIndex = c(2,3,5), yIndex = 1)
+result.boot <- result.boot[["t"]]
+colnames(result.boot) <- c('intercept', colnames(fitness)[c(2,3,5)])
+result.boot <- as.data.frame(result.boot)
 
-plot(result.boot[["t"]])
+par.boot <- lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
+par.boot <- plyr::ldply(par.boot)
+
+plot(result.boot)
 plot(par.boot)
-
-
 
 # Testing -----------------------------------------------------------------
 
-test.val.opt <- lmBootOptimized(data.frame(x, y) , nBoot)
-test.val.par <- lmBootParallel(inputData = fitness , nBoot = 100, xIndex = c(2,3,5), yIndex = 1)
+test.val.opt <- lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
+test.val.par <- lmBootParallel(inputData = fitness , nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
 test.val.par.neat <- plyr::ldply(test.val.par)
 
 View(test.val.par.neat)

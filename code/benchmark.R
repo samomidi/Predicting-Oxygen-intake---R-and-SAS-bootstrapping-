@@ -77,15 +77,15 @@ microbenchmark(
 
 profvis({
   lmBoot(data.frame(x, y) , nBoot)  
-})
+}, prof_output = 'Profiling/Profiles/lmBoot.Rprofvis')
 
 profvis({
   lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
-})
+}, prof_output = 'Profiling/Profiles/lmBootOpt.Rprofvis')
 
-profvis({
+test.prof <- profvis({
   lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
-})
+}, prof_output = 'Profiling/Profiles/lmBootPar.Rprofvis')
 
 bootLM.performance.test <- function() {
   numRows <- nrow(fitness)
@@ -99,7 +99,7 @@ profvis({
   bootLM.performance.test()
 })
 
-# Plots -------------------------------------------------------------------
+# Time Plots -------------------------------------------------------------------
 
 numOfMeasurements <- 5
 
@@ -138,7 +138,9 @@ plotTimings$time <- round(x = plotTimings$time, digits = 8)
 
 ggplot(plotTimings, aes(x = size, y = time, group = group, colour = group)) + 
   geom_point() + 
-  geom_line()
+  geom_line() +
+  scale_x_continuous(breaks = 5, 
+                     limits = c(0, 1e5))
 
 # test.plot <- plotTimings %>% filter(group == "lmBoot")
 # plot(test.plot$size, test.plot$time)
@@ -181,6 +183,21 @@ par.boot <- plyr::ldply(par.boot)
 
 plot(result.boot)
 plot(par.boot)
+
+# View Results ------------------------------------------------------------
+
+lmBoot.res <- lmBoot(data.frame(x, y) , nBoot)
+lmBootOpt.res <- lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
+lmBootPar.res <- lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
+lmBootPar.res <- plyr::ldply(lmBootPar.res)
+
+View(lmBoot.res)
+View(lmBootOpt.res)
+View(lmBootPar.res)
+
+
+# Estimations Plots -------------------------------------------------------
+
 
 # Testing -----------------------------------------------------------------
 

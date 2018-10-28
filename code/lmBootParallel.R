@@ -1,11 +1,10 @@
 library(doParallel)
 
-bootLM <- function(index, inputData, numberOfRows) {
+bootLM <- function(index, inputData, numberOfRows, xIndex, yIndex) {
   # resample our data with replacement
   bootData <- inputData[sample(1:numberOfRows, numberOfRows, replace = T), ]
-  browser()
-  Xmat <- bootData[,1:2]
-  Ymat <- bootData[,3]
+  Xmat <- bootData[, c(1, xIndex)]
+  Ymat <- bootData[, yIndex]
   
   # fit the model under this alternative reality
   # Changed the lm part to matrix form
@@ -15,10 +14,11 @@ bootLM <- function(index, inputData, numberOfRows) {
   
   # Transpose beta to have the values in 1 row and 2 cols
   beta <- t(beta)
+  colnames(beta) <- c('intercept', colnames(inputData)[xIndex])
   return(beta)
 }
 
-lmBootParallel <- function(inputData, nBoot) {
+lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
   # Calculating the number of rows
   numberOfRows <- nrow(inputData)
   
@@ -37,10 +37,12 @@ lmBootParallel <- function(inputData, nBoot) {
   # Initializing bootResults
   bootResults <- matrix(data = NA, nrow = nBoot, ncol = 2)
   bootResults <- parLapply(myClust, 1:nBoot, bootLM, inputData = as.matrix(bindedData), 
-                           numberOfRows = numberOfRows)
+                           numberOfRows = numberOfRows, xIndex = xIndex + 1, yIndex = yIndex + 1)
   
   # Terminate the workers
   stopCluster(myClust)
+  
+  # bootResults <- plyr::ldply(bootResults)
   
   return(bootResults)
 }

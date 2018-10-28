@@ -11,7 +11,7 @@ fitness <- read_csv('data/fitness.csv')
 
 x <- fitness$Age
 y <- fitness$Weight
-nBoot <- 1e5
+nBoot <- 1e3
 
 
 # Functions Timing --------------------------------------------------------
@@ -136,4 +136,15 @@ par.boot <- lmBootParallel(data.frame(x, y) , 1e4)
 plot(result.boot[["t"]])
 plot(par.boot)
 
+
+
+# Testing -----------------------------------------------------------------
+
+test.val.opt <- lmBootOptimized(data.frame(x, y) , nBoot)
+test.val.par <- lmBootParallel(inputData = fitness , nBoot = 100, xIndex = c(2,3,5), yIndex = 1)
+test.val.par.neat <- plyr::ldply(test.val.par)
+
+View(test.val.par.neat)
+View(test.val.opt)
+View(test.val.par)
 

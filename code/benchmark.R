@@ -95,7 +95,7 @@ bootLM.performance.test <- function() {
 
 # Plots -------------------------------------------------------------------
 
-# Get the timming of the lmBootParallel for 10 data sizes
+# Get the timing of the lmBootParallel for 10 data sizes
 lmBootParallelTimings <- matrix(data = NA, nrow = 3, ncol = 2)
 colnames(lmBootParallelTimings) <- c("size", "time")
 for(i in 1:3) {
@@ -136,18 +136,4 @@ par.boot <- lmBootParallel(data.frame(x, y) , 1e4)
 plot(result.boot[["t"]])
 plot(par.boot)
 
-
-
-# Some testing ------------------------------------------------------------
-
-vec.size <- 1e8
-vec <- c(1:vec.size)
-
-system.time(mean(vec))
-system.time(sum(vec)/vec.size)
-
-fitness %-% c(20, 20, 20, 20, 20, 20, 20)
-
-X <- cbind(1, x)
-bootLM(1, as.matrix(cbind(X, y)), nrow(data.frame(x, y)))
 

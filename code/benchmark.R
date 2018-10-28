@@ -8,7 +8,6 @@ source('code/lmBootOptimized.R')
 source('code/lmBootParallel.R')
 
 fitness <- read_csv('data/fitness.csv')
-View(fitness)
 
 x <- fitness$Age
 y <- fitness$Weight
@@ -79,5 +78,76 @@ profvis({
 })
 
 profvis({
-  lmBootParallel(data.frame(x, y) , nBoot)
+  View(lmBootParallel(data.frame(x, y) , nBoot))
 })
+
+profvis({
+  bootLM.performance.test()
+})
+
+bootLM.performance.test <- function() {
+  numRows <- nrow(data.frame(x, y))
+  for(i in 1:nBoot){
+    bootLM(i, data.frame(x, y), numRows)
+  }
+}
+
+
+# Plots -------------------------------------------------------------------
+
+# Get the timming of the lmBootParallel for 10 data sizes
+lmBootParallelTimings <- matrix(data = NA, nrow = 3, ncol = 2)
+colnames(lmBootParallelTimings) <- c("size", "time")
+for(i in 1:3) {
+  size <- 10 ^ i
+  time <- system.time(lmBootParallel(data.frame(x, y) , size))[3]
+  lmBootParallelTimings[i, ] <- c(size, time)
+}
+
+lmBootParallelTimings[, 2] <- lmBootParallelTimings[, 2] / 1000
+
+plot(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
+lines(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
+
+# Add a plot showing the points of x and y and the line using the retured betas
+
+# R boot benchmark --------------------------------------------------------
+
+linModel <- function(d, w){
+  d <- d[w,  ]
+  r <- cor(x = d$x, y = d$y)
+  b <- r * sd(x = d$y) / sd(x = d$x)
+  a <- mean(d$y) - (b * mean(d$x))
+  return(c(a, b))
+}
+
+microbenchmark(
+  boot(data = data.frame(x, y), statistic = linModel, R = 1e3, ncpus = 3),
+  lmBootParallel(data.frame(x, y) , nBoot),
+  times = 2
+)
+
+system.time(boot(data = data.frame(x, y), statistic = linModel, R = 1e5, ncpus = 4))
+system.time(lmBootParallel(data.frame(x, y) , 1e5))
+
+result.boot <- boot(data = data.frame(x, y), statistic = linModel, R = 1e4, ncpus = 4)
+par.boot <- lmBootParallel(data.frame(x, y) , 1e4)
+
+plot(result.boot[["t"]])
+plot(par.boot)
+
+
+
+# Some testing ------------------------------------------------------------
+
+vec.size <- 1e8
+vec <- c(1:vec.size)
+
+system.time(mean(vec))
+system.time(sum(vec)/vec.size)
+
+fitness %-% c(20, 20, 20, 20, 20, 20, 20)
+
+X <- cbind(1, x)
+bootLM(1, as.matrix(cbind(X, y)), nrow(data.frame(x, y)))
+

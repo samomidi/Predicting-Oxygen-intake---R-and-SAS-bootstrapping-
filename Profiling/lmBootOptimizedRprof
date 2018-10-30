@@ -1,6 +1,12 @@
 sample.interval=20000
+<<<<<<< HEAD
 "identical" "hook" "Rprof" 
 "t" "solve" "lmBootOptimized" 
 "tryCatch" "base::try" 
 "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "base::try" 
 "isBaseNamespace" "getExportedValue" "::" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "base::try" 
+=======
+"colnames<-" "solve.default" "solve" "lmBootOptimized" 
+"colnames<-" "solve.default" "solve" "lmBootOptimized" 
+"sample.int" "sample" "lmBootOptimized" 
+>>>>>>> 8f6e433cd7bdfdc7df45f267f27290751c767d5e

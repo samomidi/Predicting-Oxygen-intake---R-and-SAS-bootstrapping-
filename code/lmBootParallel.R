@@ -1,8 +1,8 @@
 library(doParallel)
 
-bootLM <- function(index, inputData, numberOfRows, xIndex, yIndex) {
+bootLM <- function(sampleVector, inputData, numberOfRows, xIndex, yIndex) {
   # resample our data with replacement
-  bootData <- inputData[sample(1:numberOfRows, numberOfRows, replace = T), ]
+  bootData <- inputData[sampleVector, ]
   Xmat <- bootData[, c(1, xIndex)]
   Ymat <- bootData[, yIndex]
   
@@ -11,10 +11,6 @@ bootLM <- function(index, inputData, numberOfRows, xIndex, yIndex) {
   # betas = (X'X)^-1 * X'Y
   # solve(t(Xmat)%*%Xmat) will return the inverse of X'X
   beta <- solve(t(Xmat)%*%Xmat)%*%t(Xmat)%*%Ymat
-  
-  # Transpose beta to have the values in 1 row and 2 cols
-  beta <- t(beta)
-  colnames(beta) <- c('intercept', colnames(inputData)[xIndex])
   return(beta)
 }
 
@@ -29,11 +25,12 @@ lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
   # Output:
   #   bootResults - matrix - contains the y-intercept and the slopes of the 
   #   explanatory variables
-  # Calculating the number of rows
   
+  # Calculating the number of rows
   numberOfRows <- nrow(inputData)
   
-  # Initialising the data
+  # Initialising the data, we add a column of 1 which will be the first column
+  # of the X matrix so that we can calculate beta 0
   bindedData <- as.matrix(cbind(1, inputData))
   
   # Available cores
@@ -45,16 +42,17 @@ lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
   # Register cluster for parallel
   registerDoParallel(myClust)
   
+  sampleVector <- matrix(sample(1:numberOfRows, numberOfRows*nBoot, replace = T), 
+                         nrow = numberOfRows, ncol= nBoot)
+  
   # Initializing bootResults
   bootResults <- matrix(data = NA, nrow = nBoot, ncol = (length(xIndex) + 1))
-  bootResults <- parLapply(myClust, 1:nBoot, bootLM, inputData = as.matrix(bindedData), 
-                           numberOfRows = numberOfRows, xIndex = xIndex + 1, yIndex = yIndex + 1)
+  bootResults <- matrix(parApply(myClust, sampleVector, 2, bootLM, inputData = as.matrix(bindedData), 
+                                 numberOfRows = numberOfRows, xIndex = xIndex + 1, yIndex = yIndex + 1), 
+                        nrow = nBoot, ncol = (length(xIndex) + 1), byrow = TRUE)
   
   # Terminate the workers
   stopCluster(myClust)
-  
-  # bootResults <- plyr::ldply(bootResults)
-  
   return(bootResults)
 }
 

@@ -2,6 +2,7 @@ library(microbenchmark)
 library(boot)
 library(profvis)
 library(tidyverse)
+library(ggplot2)
 
 source('code/lmBoot.r')
 source('code/lmBootOptimized.R')
@@ -11,7 +12,7 @@ fitness <- read_csv('data/fitness.csv')
 
 x <- fitness$Weight
 y <- fitness$Age
-nBoot <- 1e3
+nBoot <- 1e6
 nCores <- detectCores()
 
 
@@ -76,15 +77,15 @@ microbenchmark(
 
 profvis({
   lmBoot(data.frame(x, y) , nBoot)  
-})
+}, prof_output = 'Profiling/Profiles/lmBoot.Rprofvis')
 
 profvis({
   lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
-})
+}, prof_output = 'Profiling/Profiles/lmBootOpt.Rprofvis')
 
-profvis({
+test.prof <- profvis({
   lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
-})
+}, prof_output = 'Profiling/Profiles/lmBootPar.Rprofvis')
 
 bootLM.performance.test <- function() {
   numRows <- nrow(fitness)
@@ -98,23 +99,53 @@ profvis({
   bootLM.performance.test()
 })
 
-# Plots -------------------------------------------------------------------
+# Time Plots -------------------------------------------------------------------
 
-# Get the timing of the lmBootParallel for 10 data sizes
-numOfMeasurements <- 3
-lmBootParallelTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 2)
-colnames(lmBootParallelTimings) <- c("size", "time")
+numOfMeasurements <- 5
+
+# Get the timing of the original lmBoot
+lmBootTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 3)
+colnames(lmBootTimings) <- c("group", "size", "time")
+for(i in 1:numOfMeasurements) {
+  size <- 10 ^ i
+  time <- system.time(lmBoot(data.frame(x, y) , size))[3]
+  lmBootTimings[i, ] <- c("lmBoot", size, time)
+}
+
+# Get the timing of the lmBootOptimised
+lmBootOptimizedTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 3)
+colnames(lmBootOptimizedTimings) <- c("group", "size", "time")
+for(i in 1:numOfMeasurements) {
+  size <- 10 ^ i
+  time <- system.time(lmBootOptimized(
+    inputData = fitness, nBoot = size, xIndex = c(2,3,5), yIndex = 1))[3]
+  lmBootOptimizedTimings[i, ] <- c("lmBootOptimized", size, time)
+}
+
+# Get the timing of the lmBootParallel
+lmBootParallelTimings <- matrix(data = NA, nrow = numOfMeasurements, ncol = 3)
+colnames(lmBootParallelTimings) <- c("group", "size", "time")
 for(i in 1:numOfMeasurements) {
   size <- 10 ^ i
   time <- system.time(lmBootParallel(
     inputData = fitness, nBoot = size, xIndex = c(2,3,5), yIndex = 1))[3]
-  lmBootParallelTimings[i, ] <- c(size, time)
+  lmBootParallelTimings[i, ] <- c("lmBootParallel", size, time)
 }
 
-lmBootParallelTimings[, 2] <- lmBootParallelTimings[, 2] / 1000
+plotTimings <- as.data.frame(rbind(lmBootTimings, lmBootOptimizedTimings, lmBootParallelTimings))
+plotTimings <- plotTimings %>% mutate_at(vars(-group), function(x) as.numeric(as.character(x)))
+plotTimings$time <- round(x = plotTimings$time, digits = 8)
 
-plot(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
-lines(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
+ggplot(plotTimings, aes(x = log(size), y = time, group = group, colour = group)) + 
+  geom_point() + 
+  geom_line() 
+  
+
+# test.plot <- plotTimings %>% filter(group == "lmBoot")
+# plot(test.plot$size, test.plot$time)
+# 
+# plot(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
+# lines(lmBootParallelTimings[, 1], lmBootParallelTimings[, 2])
 
 # Add a plot showing the points of x and y and the line using the retured betas
 
@@ -151,6 +182,63 @@ par.boot <- plyr::ldply(par.boot)
 
 plot(result.boot)
 plot(par.boot)
+
+# View Results ------------------------------------------------------------
+
+lmBoot.res <- lmBoot(data.frame(x, y) , nBoot)
+lmBootOpt.res <- lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2), yIndex = 1)
+lmBootPar.res <- lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2), yIndex = 1)
+#lmBootPar.res <- plyr::ldply(lmBootPar.res)
+
+lm.res <- coef(lm(y ~ x))
+
+View(lmBoot.res)
+View(lmBootOpt.res)
+View(lmBootPar.res)
+
+
+# Estimations Plots -------------------------------------------------------
+
+ggplot(fitness, aes(x = fitness$Weight, y = fitness$Age)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x)
+
+ggplot() +
+  geom_point(data = fitness, aes(x = fitness$Weight, y = fitness$Age)) +
+  geom_abline(intercept = lmBootPar.res[10, 1], slope = lmBootPar.res[10, 2], colour = "red") +
+  geom_abline(intercept = lm.res[1], slope = lm.res[2], colour = "blue")
+
+plot(x = fitness$Weight, y = fitness$Age, pch = 20, col = 'purple', cex = 3)
+apply(lmBootPar.res, 1, function(q){abline(q[1], q[2], col='lightgrey')})
+
+# Intercept Plots
+hist(lmBoot.res[, 1], main = "Original Intercept Distribution")
+hist(lmBoot.res[, 2], main = "Original Weight Slope Distribution")
+
+hist(lmBootOpt.res[, 1], main = "Opt Intercept Distribution")
+hist(lmBootOpt.res[, 2], main = "Parallel Weight Slope Distribution")
+
+hist(lmBootPar.res$intercept, main = "Parallel Intercept Distribution")
+hist(lmBootPar.res$Weight, main = "Parallel Weight Slope Distribution")
+
+# Get the 95% confidence interval
+lmBootPar.res.confidence <- quantile(lmBootPar.res[, 1], probs = c(0.025, 0.975))
+lmBootPar.res.filtered <- lmBootPar.res %>% 
+  filter(intercept > lmBootPar.res.confidence[1]) %>%
+  filter(intercept < lmBootPar.res.confidence[2])
+
+# Means of the bootstraps
+lmBoot.mean <- c(mean(lmBoot.res[, 1]), mean(lmBoot.res[, 2]))
+lmBootOpt.mean <- c(mean(lmBootOpt.res[, 1]), mean(lmBootOpt.res[, 2]))
+lmBootPar.mean <- c(mean(lmBootPar.res[, 1]), mean(lmBootPar.res[, 2]))
+lmBootParFiltered.mean <- c(mean(lmBootPar.res.filtered$intercept), mean(lmBootPar.res.filtered$Weight))
+
+
+lmBoot.mean
+lmBootOpt.mean
+lmBootPar.mean
+lmBootParFiltered.mean
+coef(lm(y ~ x))
 
 # Testing -----------------------------------------------------------------
 

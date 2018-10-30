@@ -1,5 +1,6 @@
 sample.interval=20000
-"t.default" "t" "lmBootOptimized" 
-"diag" "solve.default" "solve" "lmBootOptimized" 
-"lmBootOptimized" 
-"length" "diag" "solve.default" "solve" "lmBootOptimized" 
+"identical" "hook" "Rprof" 
+"t" "solve" "lmBootOptimized" 
+"tryCatch" "base::try" 
+"doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "base::try" 
+"isBaseNamespace" "getExportedValue" "::" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "base::try" 

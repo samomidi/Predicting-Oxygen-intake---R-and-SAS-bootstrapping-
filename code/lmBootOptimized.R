@@ -19,11 +19,14 @@ lmBootOptimized <- function(inputData, nBoot, xIndex, yIndex){
   # Initializing bootResults
   bootResults <- matrix(data = NA, nrow = nBoot, ncol = (length(xIndex) + 1))
   
+  resampleVector <- sample(1:numberOfRows, numberOfRows * nBoot, replace = T)
+  
   for(i in 1:nBoot) {
     # resample our data with replacement
-    bootData <- bindedData[sample(1:numberOfRows, numberOfRows, replace = T), ]
+    bootData <- bindedData[resampleVector[(((i-1)*numberOfRows)+1):(i*numberOfRows)], ]
     Xmat <- bootData[, c(1, xIndex + 1)]
     Ymat <- bootData[, yIndex + 1]
+    
     beta <- solve(t(Xmat)%*%Xmat)%*%t(Xmat)%*%Ymat
     bootResults[i, ] <- beta
     

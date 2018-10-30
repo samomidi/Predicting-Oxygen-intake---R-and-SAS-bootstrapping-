@@ -12,7 +12,7 @@ fitness <- read_csv('data/fitness.csv')
 
 x <- fitness$Weight
 y <- fitness$Age
-nBoot <- 1e3
+nBoot <- 1e6
 nCores <- detectCores()
 
 
@@ -136,11 +136,10 @@ plotTimings <- as.data.frame(rbind(lmBootTimings, lmBootOptimizedTimings, lmBoot
 plotTimings <- plotTimings %>% mutate_at(vars(-group), function(x) as.numeric(as.character(x)))
 plotTimings$time <- round(x = plotTimings$time, digits = 8)
 
-ggplot(plotTimings, aes(x = size, y = time, group = group, colour = group)) + 
+ggplot(plotTimings, aes(x = log(size), y = time, group = group, colour = group)) + 
   geom_point() + 
-  geom_line() +
-  scale_x_continuous(breaks = 5, 
-                     limits = c(0, 1e5))
+  geom_line() 
+  
 
 # test.plot <- plotTimings %>% filter(group == "lmBoot")
 # plot(test.plot$size, test.plot$time)
@@ -187,9 +186,9 @@ plot(par.boot)
 # View Results ------------------------------------------------------------
 
 lmBoot.res <- lmBoot(data.frame(x, y) , nBoot)
-lmBootOpt.res <- lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
-lmBootPar.res <- lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1)
-lmBootPar.res <- plyr::ldply(lmBootPar.res)
+lmBootOpt.res <- lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2), yIndex = 1)
+lmBootPar.res <- lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2), yIndex = 1)
+#lmBootPar.res <- plyr::ldply(lmBootPar.res)
 
 lm.res <- coef(lm(y ~ x))
 
@@ -200,15 +199,46 @@ View(lmBootPar.res)
 
 # Estimations Plots -------------------------------------------------------
 
-ggplot(fitness, aes(x = fitness$Age, y = fitness$Weight)) +
+ggplot(fitness, aes(x = fitness$Weight, y = fitness$Age)) +
   geom_point() +
   geom_smooth(method = "lm", formula = y ~ x)
 
 ggplot() +
-  geom_point(data = fitness, aes(x = fitness$Age, y = fitness$Weight)) +
+  geom_point(data = fitness, aes(x = fitness$Weight, y = fitness$Age)) +
   geom_abline(intercept = lmBootPar.res[10, 1], slope = lmBootPar.res[10, 2], colour = "red") +
   geom_abline(intercept = lm.res[1], slope = lm.res[2], colour = "blue")
-  
+
+plot(x = fitness$Weight, y = fitness$Age, pch = 20, col = 'purple', cex = 3)
+apply(lmBootPar.res, 1, function(q){abline(q[1], q[2], col='lightgrey')})
+
+# Intercept Plots
+hist(lmBoot.res[, 1], main = "Original Intercept Distribution")
+hist(lmBoot.res[, 2], main = "Original Weight Slope Distribution")
+
+hist(lmBootOpt.res[, 1], main = "Opt Intercept Distribution")
+hist(lmBootOpt.res[, 2], main = "Parallel Weight Slope Distribution")
+
+hist(lmBootPar.res$intercept, main = "Parallel Intercept Distribution")
+hist(lmBootPar.res$Weight, main = "Parallel Weight Slope Distribution")
+
+# Get the 95% confidence interval
+lmBootPar.res.confidence <- quantile(lmBootPar.res[, 1], probs = c(0.025, 0.975))
+lmBootPar.res.filtered <- lmBootPar.res %>% 
+  filter(intercept > lmBootPar.res.confidence[1]) %>%
+  filter(intercept < lmBootPar.res.confidence[2])
+
+# Means of the bootstraps
+lmBoot.mean <- c(mean(lmBoot.res[, 1]), mean(lmBoot.res[, 2]))
+lmBootOpt.mean <- c(mean(lmBootOpt.res[, 1]), mean(lmBootOpt.res[, 2]))
+lmBootPar.mean <- c(mean(lmBootPar.res[, 1]), mean(lmBootPar.res[, 2]))
+lmBootParFiltered.mean <- c(mean(lmBootPar.res.filtered$intercept), mean(lmBootPar.res.filtered$Weight))
+
+
+lmBoot.mean
+lmBootOpt.mean
+lmBootPar.mean
+lmBootParFiltered.mean
+coef(lm(y ~ x))
 
 # Testing -----------------------------------------------------------------
 

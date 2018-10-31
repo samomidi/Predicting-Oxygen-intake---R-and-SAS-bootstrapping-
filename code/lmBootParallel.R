@@ -57,6 +57,6 @@ lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
 }
 
 # Changes done:
-# Calculated the numbver of rows once before the loop instead of nBoot times
+# Calculated the number of rows once before the loop instead of nBoot times
 # Predefining the bootResults to get rid of the rbind
 # Calculating the beta coefficients using matrices calculation

@@ -30,17 +30,7 @@ lmBootOptimized <- function(inputData, nBoot, xIndex, yIndex){
     beta <- solve(t(Xmat)%*%Xmat)%*%t(Xmat)%*%Ymat
     bootResults[i, ] <- beta
     
-    # # Get the correlation coefficient
-    # r <- cor(x = bootData$x, y = bootData$y)
-    # 
-    # # Calculating the slope
-    # b <- r * sd(x = bootData$y) / sd(x = bootData$x)
-    # 
-    # # Calculating the y-intercept
-    # a <- mean(bootData$y) - (b * mean(bootData$x))
-    # 
-    # # store the coefs
-    # bootResults[i, ] <- c(a, b)
+    
     
   } # end of for loop
   

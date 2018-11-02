@@ -34,12 +34,6 @@ lmBootOptimized <- function(inputData, nBoot, xIndex, yIndex){
     # B = (X'X)^-1 * X'Y
     beta <- solve(t(Xmat)%*%Xmat)%*%t(Xmat)%*%Ymat
     bootResults[i, ] <- beta
-<<<<<<< HEAD
-=======
-    
-    
-    
->>>>>>> 76106e991a9f31715b79be484cff0cbb3f8bc99a
   } # end of for loop
   
   colnames(bootResults) <- c('intercept', colnames(inputData)[xIndex])

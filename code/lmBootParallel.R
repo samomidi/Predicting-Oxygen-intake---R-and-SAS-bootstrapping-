@@ -87,11 +87,3 @@ lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
   colnames(bootResults) <- c("intercept", colnames(inputData)[xIndex])
   return(bootResults)
 }
-<<<<<<< HEAD
-=======
-
-# Changes done:
-# Calculated the number of rows once before the loop instead of nBoot times
-# Predefining the bootResults to get rid of the rbind
-# Calculating the beta coefficients using matrices calculation
->>>>>>> 76106e991a9f31715b79be484cff0cbb3f8bc99a

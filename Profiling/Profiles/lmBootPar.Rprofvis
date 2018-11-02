@@ -1,6 +1,0 @@
-memory profiling: GC profiling: line profiling: sample.interval=10000
-#File 1: code/lmBootParallel.R
-#File 2: <expr>
-:662519:960659:52618720:93:"socketConnection" "newPSOCKnode" "makePSOCKcluster" "makeCluster" 1#47 "lmBootParallel" 2#2 "force" "doTryCatch" "tryCatchOne" "tryCatchList" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "profvis" 
-:662907:960717:52736880:36:"socketConnection" "newPSOCKnode" "makePSOCKcluster" "makeCluster" 1#47 "lmBootParallel" 2#2 "force" "doTryCatch" "tryCatchOne" "tryCatchList" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "profvis" 
-:663681:960833:52971240:71:"system" "newPSOCKnode" "makePSOCKcluster" "makeCluster" 1#47 "lmBootParallel" 2#2 "force" "doTryCatch" "tryCatchOne" "tryCatchList" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "profvis" 

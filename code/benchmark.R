@@ -304,8 +304,14 @@ coef(lm(y ~ x))
 
 # Multiple Covariates -----------------------------------------------------
 
+<<<<<<< HEAD
 # Using the final version using multiple covariates and comparing the values to
 # the corresponding lm
 lmBootPar.cov <- lmBootParallel(fitness, nBoot, c(2, 3, 4), 1)
 apply(lmBootPar.cov, 2, mean)
 coef(lm(fitness$Age ~ fitness$Weight + fitness$Oxygen + fitness$RunTime))
+=======
+
+
+
+>>>>>>> 76106e991a9f31715b79be484cff0cbb3f8bc99a

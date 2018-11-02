@@ -1,4 +1,5 @@
 sample.interval=20000
 "socketConnection" "newPSOCKnode" "makePSOCKcluster" "makeCluster" "lmBootParallel" 
-"socketConnection" "newPSOCKnode" "makePSOCKcluster" "makeCluster" "lmBootParallel" 
+"lapply" "parApply" "matrix" "lmBootParallel" 
+"serialize" "sendData.SOCKnode" "sendData" "postNode" "sendCall" "staticClusterApply" "clusterApply" "do.call" "parLapply" "parApply" "matrix" "lmBootParallel" 
 "unserialize" "recvData.SOCKnode" "recvData" "FUN" "lapply" "staticClusterApply" "clusterApply" "do.call" "parLapply" "parApply" "matrix" "lmBootParallel" 

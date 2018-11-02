@@ -13,7 +13,7 @@ fitness <- read_csv('data/fitness.csv')
 
 x <- fitness$Weight
 y <- fitness$Age
-nBoot <- 1e5
+nBoot <- 1e4
 nCores <- detectCores()
 
 # Profile both the original and optimised code # done # Built in Profiler
@@ -226,6 +226,9 @@ plotTimings$time <- round(x = plotTimings$time, digits = 8)
 
 # Save the plotTimings for future uses without running the codes again
 saveRDS(plotTimings, file = 'data/plotTimings.rds')
+
+# Read saved data from file instead of waiting for the code to run
+plotTimings <- readRDS("data/plotTimings.rds")
 
 # Plots showing the execution time of the 3 functions for multiple nBoot sizes
 # Plotting the log(size) to rescale the x-axis (for diplay reasons)

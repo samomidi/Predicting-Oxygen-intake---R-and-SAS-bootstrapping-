@@ -39,3 +39,26 @@ lmBootOptimized <- function(inputData, nBoot, xIndex, yIndex){
   colnames(bootResults) <- c('intercept', colnames(inputData)[xIndex])
   return(bootResults)
 }
+
+lmBootOptimizedQuantiles <- 
+  function(data, yIndex, xIndex, nBoot = 1000, alpha = 0.05) {
+    # Purpose:
+    #   Run optimized bootstrap code and return quantiles
+    # Inputs:
+    #   inputData - data frame
+    #   xIndex - list of integers - the indexes of explanatory variables
+    #   yIndex - integer - index of the response variable
+    #   
+    #   nBoot - integer - number of resamples, default 1000
+    # Output:
+    #   A matrix containing the upper and lower confidence intervals
+    #   for the y-intercept and the slopes of the explanatory variables
+    
+    boots <- lmBootOptimized(data, nBoot, xIndex, yIndex)
+    cis <- matrix(nrow = 2, ncol = ncol(boots))
+    colnames(cis) <- colnames(boots)
+    rownames(cis) <- c('Lower CI', 'Upper CI')
+    for (i in 1:ncol(cis)) {
+      cis[,i] <- quantile(boots[,i], probs = c(alpha/2,(1-alpha/2)))
+    }
+  }

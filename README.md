@@ -20,7 +20,7 @@ For example, we are given the csv file 'fitness' containing columns for variable
 |Lower CI |  81.43913| -0.4191007| -0.1603127| -3.285994| -0.5380501| -0.0324474|
 |Upper CI | 120.51168| -0.0074428|  0.0473132| -2.144767| -0.0954170|  0.4945007|
 
-![R Bootstrapping Example](Plots/Plot1.png)
+![R Bootstrapping Example](Plots/R Bootstrap example.png)
 
 TO DO:<br>
 Estimations Plots<br>

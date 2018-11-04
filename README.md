@@ -22,6 +22,8 @@ For example, we are given the csv file 'fitness' containing columns for variable
 
 ![R Bootstrapping Example](/Plots/RBootEx.png)
 
+While the SAS macro performs the same task, its current implementation is limited to accept only one independent variable. The SAS file included performs a bootstrap of 10000 repetitions on the linear model of Age ~ Weight. It prints to an RTF file in the same folder a table of mean coefficients and their 95% Confidence Intervals, as well as density plots for the coefficients and intercepts. An example SAS output file is provided in the /code directory.
+
 TO DO:<br>
 Estimations Plots<br>
 Check the parallel function<br>

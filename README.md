@@ -13,6 +13,15 @@ The R function lmBootParallel is used by specifying a dataset to perform the boo
 The implementation consists of the main function and a helper function. The helper function takes as input a single dataset which includes a column of 1s as its first column for the bias term. It then reformats the data into two matrices. A matrix X of covariates and the bias terms, and a matrix Y for the response variable. The formula for the analytical solution to a linear model is then used on the matrices to directly calculate the model parameters.
 The main function serves to make parallelised calls to the helper function. It takes the data as input, adds the column of 1s for the biases and sets up a cluster based on the number of cores available on the machine...
 
+For example, we are given the csv file 'fitness' containing columns for variables Age, Weight, Oxygen, RunTime, RestPulse, RunPulse, and MaxPulse, in that order. We use AIC to find the best model predicting Oxygen without interactions, and decide on parameters for Age, Weight, RunTime, RunPulse, and MaxPulse. To use bootstrapping to find the 95% confidence intervals for the coefficients of these parameters from 1000 resamples, we run 'lmBootOptimized(data = fitness, nBoot = 1000, xIndex = c(1,2,4,6,7), yIndex = 3).' This returns a matrix of intercepts and coefficients for each resample. Getting the 95% quantiles then returns the following table of confidence intervals:
+
+|         | intercept|        Age|     Weight|   RunTime|   RunPulse|   MaxPulse|
+|:--------|---------:|----------:|----------:|---------:|----------:|----------:|
+|Lower CI |  81.43913| -0.4191007| -0.1603127| -3.285994| -0.5380501| -0.0324474|
+|Upper CI | 120.51168| -0.0074428|  0.0473132| -2.144767| -0.0954170|  0.4945007|
+
+![R Bootstrapping Example](/Plots/R Bootstrap example.png)
+
 TO DO:<br>
 Estimations Plots<br>
 Check the parallel function<br>

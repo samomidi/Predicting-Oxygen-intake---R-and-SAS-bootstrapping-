@@ -159,6 +159,23 @@
 	
 %mend;
 
+%macro rtfCIMeans(DataSet);
+	proc univariate data = &DataSet;
+		output out = rtfData mean = means pctlpre= confint PCTLPTS = 2.5, 97.5;
+	run;
+	ods rtf file = 'output.rtf';
+	proc print data = rtfData;
+	run;
+	goptions reset = all;
+	proc sgplot data = &DataSet;
+		density RandomIntercept;
+	run;
+	proc sgplot data = &DataSet;
+		density RandomSlope;
+	run;
+	ods rtf close;
+%mend
+
 
 options nonotes;
 /* Load the data set into RAM */
@@ -184,6 +201,9 @@ sasfile Fitness close;
 /*Run the CI on the regression coefficients*/
 %regBootCIMean(DataSet = ResultHolder);
 
+
+/* Prints to an rtf the 95% ci, mean estimates, and distributions, for each parameter coefficient */
+%rtfCIMeans(DataSet = ResultHolder);
 
 /*%let _timer_start = %sysfunc(datetime());*/
 /**/

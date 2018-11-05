@@ -234,25 +234,25 @@ plotTimings <- readRDS("data/plotTimings.rds")
 # Plotting the log(size) to rescale the x-axis (for diplay reasons)
 # The first plot shows all the time values where the other 2 plots show
 # respectively the times for size <= 1e4 and size >= 1e4 for display reasons as well
-ggplot(plotTimings, aes(x = log(size), y = time, group = group, colour = group)) + 
+ggplot(plotTimings, aes(x = log(size, 10), y = time, group = group, colour = group)) + 
   geom_point() + 
   geom_line() +
   labs(title = "Execution time for the 3 functions for multiple nBoot size",
-       x = "Size", y = "Time")
+       x = "log10(Number of Resamples)", y = "Time / seconds")
 
 plotTimings %>% filter(., size <= 1e4) %>%
-  ggplot(., aes(x = log(size), y = time, group = group, colour = group)) + 
+  ggplot(., aes(x = log(size, 10), y = time, group = group, colour = group)) + 
   geom_point() + 
   geom_line() +
   labs(title = "Execution time for the 3 functions for multiple nBoot size",
-       x = "Size", y = "Time")
+       x = "log10(Number of Resamples)", y = "Time / seconds")
 
 plotTimings %>% filter(., size >= 1e4) %>%
-  ggplot(., aes(x = log(size), y = time, group = group, colour = group)) + 
+  ggplot(., aes(x = log(size, 10), y = time, group = group, colour = group)) + 
   geom_point() + 
   geom_line() +
   labs(title = "Execution time for the 3 functions for multiple nBoot size",
-       x = "Size", y = "Time")
+       x = "log10(Number of Resamples)", y = "Time / seconds")
 
 # Estimations Plots -------------------------------------------------------
 # Getting the lm coefficients of the Age ~ Weight

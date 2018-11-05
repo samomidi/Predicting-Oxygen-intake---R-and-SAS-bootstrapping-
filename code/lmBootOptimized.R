@@ -61,4 +61,5 @@ lmBootOptimizedQuantiles <-
     for (i in 1:ncol(cis)) {
       cis[,i] <- quantile(boots[,i], probs = c(alpha/2,(1-alpha/2)))
     }
+    return(cis)
   }

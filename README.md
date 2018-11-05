@@ -28,4 +28,4 @@ While the SAS macro performs the same task, its current implementation is limite
 
 
 The following plots show the time taken against the log of the number of samples for each of the R bootstrapping functions. It is clear that in all cases the optimized function is much faster, but also that, at a high enough number of resamples, parallelization can further increase the function's efficiency:
-![R Benchmarking](/Plots/Plot123.png)
+![R Benchmarking](/Plots/Plot123.jpg)

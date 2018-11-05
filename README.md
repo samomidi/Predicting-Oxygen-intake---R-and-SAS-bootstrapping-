@@ -27,7 +27,7 @@ The interpretation of these results is that Weight and MaxPulse are not statisti
 While the SAS macro performs the same task, its current implementation is limited to accept only one independent variable. The SAS file included performs a bootstrap of 10000 repetitions on the linear model of Age ~ Weight. It prints to an RTF file in the same folder a table of mean coefficients and their 95% Confidence Intervals, as well as density plots for the coefficients and intercepts. An example SAS output file is provided in the /code directory.
 
 
-The following plots show the time taken against the log of the number of resamples for each of the R bootstrapping functions. It is clear that in all cases the optimized function is much faster, but also that, at a high enough number of resamples, parallelization can further increase the function's efficiency:
+The following plots show the time taken against the log of the number of resamples for each of the R bootstrapping functions. It is clear that in all cases the optimized function is much faster, but also that, at a high enough number of resamples, parallelization can further increase the function's efficiency. While the parallized function is more efficent for a large number of simulations, the optimized function works better for a small number of simulations. :
 ![R Benchmarking](/Plots/Plot2.png)
 ![R Benchmarking](/Plots/Plot3.png)
   (Further measurements for the unoptimized lmboot function were not performed due to the extremely long time they would have taken)

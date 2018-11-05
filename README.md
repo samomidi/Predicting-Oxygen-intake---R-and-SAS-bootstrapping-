@@ -25,10 +25,3 @@ As an example analysis, we are given the csv file 'fitness' containing columns f
 The interpretation of these results is that Weight and MaxPulse are not statistically significant as the null hypothesis of zero is included within the confidence interval for these parameters. Their removal from the model should be considered.<br> 
 
 While the SAS macro performs the same task, its current implementation is limited to accept only one independent variable. The SAS file included performs a bootstrap of 10000 repetitions on the linear model of Age ~ Weight. It prints to an RTF file in the same folder a table of mean coefficients and their 95% Confidence Intervals, as well as density plots for the coefficients and intercepts. An example SAS output file is provided in the /code directory.
-
-TO DO:<br>
-Estimations Plots<br>
-Check the parallel function<br>
-Save the profiles<br>
-Check the Boot library micro<br>
-Change the x axis values in the time plots and verify the unit of the y axis<br>

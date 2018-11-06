@@ -4,30 +4,30 @@ Assignment 2 for Software for Data Analysis, Group repo
 # Documentation and Analysis:<br>
 The main file is the [benchmark.R](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/benchmark.R). To test the code we can simply execute in order the benchmark.R file.
 <br>
-<hr>
+<br>
 The main file sources the other 3 functions needed, and creates some global variables required to call the functions. It starts by profiling the different functions using profvis, then we profiled the bootLM function (function called by the lmBootParallel) to check if we can optimize it.
 <br>
-<hr>
+<br>
  The speedIncrease(nBoot) function takes as argument the number of bootstrapping required, then it displays the execution time of the 3 functions, with the improvement comparison.
  <br>
- <hr>
+<br>
 The function linModel(), is used for the boot function from the boot package. Since we are benchmarking the the boot() function with the lmBootParallel(), the linModel() should calculate the regression coefficients in the same way as the bootLM() so that the we can benchmark only one variable (the clustering). If we calculated the coefficient in different ways we won't be able to asses properly the differences in time between the 2 bootstraps. The microbenchmark result is then saved in a [file](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/Profiling/Benchmark/bootBench1e%2B05.rds) under the Benchmark folder so that we can access the result without running and waiting for the benchmark to run.
 <br>
-<hr>
+<br>
 The Rprof section is another way of profiling the 3 functions.
 <br>
-<hr>
+<br>
 The Microbenchmark section compares the execution times of the 3 functions and plots them.
 ![Benchmarking Comparison nBoot 1e3](/Plots/Autoplot microbenchmark1e3.png) <br>
 The plot shows the min and maximum values of the time spent running the functions as well as the median. We can see that the lmBootOptmized is more efficient for nBoot = 1e3, but for bigger values such as 1e4 the lmBootParallel version is more optimal.
 <br>
-<hr>
+<br>
 In the Time Plots section we measure the execution time for multiple nBoot values and save them in [plotTimings.rds](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/data/plotTimings.rds) so that we won't have to run them again, we then plot them to compare the performance of the 3 different functions for diffrent nBoot values.
 <br>
-<hr>
+<br>
 In the estimations plot, we run the 3 functions for Age ~ Weight and plot the result to verify that the output of our functions is similar to the coef(lm(Age ~ Weight)). We get the confidence interval, and the means of every parameter and compare it to the baseline coef(lm(Age ~ Weight)) for accuracy testing.
 <br>
-<hr>
+<br>
 The Multiple Covariates section shows an example of our lmBootPar function using multiple covariates and compare the results to the baseline as well.
 <br>
 

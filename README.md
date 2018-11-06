@@ -64,6 +64,7 @@ The following plots show the time taken against the log of the number of resampl
   (Further measurements for the unoptimized lmboot function were not performed due to the extremely long time they would have taken)
 <br> <br> <br>
 References:<br>
+The following references were used to understand the matrix calculation of the coefficients: <br>
 https://onlinecourses.science.psu.edu/stat501/node/382/ <br>
 https://www.itl.nist.gov/div898/handbook/pmd/section4/pmd431.htm <br>
 http://nitro.biosci.arizona.edu/courses/EEB581-2006/handouts/LinearI.pdf <br>

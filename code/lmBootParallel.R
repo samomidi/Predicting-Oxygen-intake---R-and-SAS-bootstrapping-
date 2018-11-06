@@ -48,7 +48,7 @@ lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
   # Input checks
   if(!is.data.frame(inputData) || nBoot < 0 || !is.numeric(nBoot) || 
     any(xIndex > ncol(inputData)) || any(yIndex > ncol(inputData)) ||
-    any(xIndex < 0) || any(yIndex < 0)){
+    any(xIndex < 0) || length(yIndex != 1)){
     stop("Invalid arguments")
   }
   

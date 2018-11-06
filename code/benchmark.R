@@ -72,6 +72,14 @@ profvis({
 
 # Functions Timing --------------------------------------------------------
 speedIncrease <- function(nBoot){
+  # Purpose:
+  #   This function will time the 3 bootstrap functions for nBoot times and
+  #   display the time improvements comparison
+  # Input:
+  #   nBoot - integer - number of resampling
+  # Output:
+  #   It returns a string detailing the time improvements
+  
   # Comparing the default lmBoot with the optimized version Age ~ Weight
   overallPerformance.original <- system.time(lmBoot(data.frame(x, y) , nBoot))
   overallPerformance.opt <- system.time(lmBootOptimized(
@@ -164,27 +172,15 @@ summaryRprof(lmBootParallelRprofPath)
 
 # Microbenchmark ----------------------------------------------------------
 
-# Original with optimised
-microbenchmark(
-  lmBoot = lmBoot(data.frame(x, y) , nBoot),
-  lmBootOptimized = lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = 2, yIndex = 1),
-  times = 10
-)
-
-# optimised with parallel
-microbenchmark(
-  lmBootOptimized = lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1),
-  lmBootParallel = lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = c(2,3,5), yIndex = 1),
-  times = 10
-)
-
-# Original with parallel
+# Compare the 3 functions together
 par.micro <- microbenchmark(
   lmBoot = lmBoot(data.frame(x, y) , nBoot),
+  lmBootOptimized = lmBootOptimized(inputData = fitness, nBoot = nBoot, xIndex = 2, yIndex = 1),
   lmBootParallel = lmBootParallel(inputData = fitness, nBoot = nBoot, xIndex = 2, yIndex = 1),
   times = 10
 )
 
+# Plot the microbenchmark result
 autoplot(par.micro)
 
 # Time Plots -------------------------------------------------------------------

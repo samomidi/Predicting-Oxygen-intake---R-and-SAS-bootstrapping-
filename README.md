@@ -57,7 +57,7 @@ The following plots show the time taken against the log of the number of resampl
 ![R Benchmarking](/Plots/Plot2.png)
 ![R Benchmarking](/Plots/Plot3.png)
 =======
-The following plots show the time taken against the log of the number of resamples for each of the R bootstrapping functions. It is clear that in all cases the optimized function is much faster, but also that, at a high enough number of resamples, parallelization can further increase the function's efficiency:
+The following plots show the time taken against the log of the number of resamples for each of the R bootstrapping functions. It is clear that for nBoot values less than 1e5 the unclustered function is much faster than the parallel one, but also that, at a high enough number of resamples, parallelization can further increase the function's efficiency:
 ![R Benchmarking](/Plots/Plot1A.png)
 ![R Benchmarking](/Plots/Plot2A.png)
 

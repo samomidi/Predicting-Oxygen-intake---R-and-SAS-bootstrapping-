@@ -31,7 +31,6 @@ bootLM <- function(sampleVector, inputData, numberOfRows, xIndex, yIndex) {
   beta <- solve(t(Xmat)%*%Xmat)%*%t(Xmat)%*%Ymat
   return(beta)
 }
-head(fitness)
 
 lmBootParallel <- function(inputData, nBoot, xIndex, yIndex) {
   # Purpose:

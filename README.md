@@ -1,11 +1,6 @@
 # MT5763-A2-TeamSharks
 Assignment 2 for Software for Data Analysis, Group repo
 
-References:<br>
-https://onlinecourses.science.psu.edu/stat501/node/382/ <br>
-https://www.itl.nist.gov/div898/handbook/pmd/section4/pmd431.htm <br>
-http://nitro.biosci.arizona.edu/courses/EEB581-2006/handouts/LinearI.pdf <br>
-
 Report:<br>
 This repository contains 2 optimised functions [lmBootParallel.R](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/lmBootParallel.R "lmBootParallel") and [regBootOptimised.sas](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/regBootOptimised.sas). Their purpose is to perform non-parameteric bootstrap resamplings of datasets, estimating the parameters of a linear model fit to each resample. This provides samples from the distribution of values that each parameter can take. From the output, confidence intervals can be calculated as well as indicate the level of uncertainty in the point estimates for the parameters of the model.
 
@@ -27,7 +22,6 @@ The interpretation of these results is that Weight and MaxPulse are not statisti
 While the SAS macro performs the same task, its current implementation is limited to accept only one independent variable. The SAS file included performs a bootstrap of 10000 repetitions on the linear model of Age ~ Weight. It prints to an RTF file in the same folder a table of mean coefficients and their 95% Confidence Intervals, as well as density plots for the coefficients and intercepts. An example SAS output file is provided in the /code directory.
 
 
-<<<<<<< HEAD
 The following plots show the time taken against the log of the number of resamples for each of the R bootstrapping functions. It is clear that in all cases the optimized function is much faster, but also that, at a high enough number of resamples, parallelization can further increase the function's efficiency. While the parallized function is more efficent for a large number of simulations, the optimized function works better for a small number of simulations. :
 
 ![R Benchmarking](/Plots/Plot2.png)
@@ -36,5 +30,10 @@ The following plots show the time taken against the log of the number of resampl
 The following plots show the time taken against the log of the number of resamples for each of the R bootstrapping functions. It is clear that in all cases the optimized function is much faster, but also that, at a high enough number of resamples, parallelization can further increase the function's efficiency:
 ![R Benchmarking](/Plots/Plot1A.png)
 ![R Benchmarking](/Plots/Plot2A.png)
->>>>>>> e044099dc9af3cf83c62d4611b43ad133bbb6fe7
+
   (Further measurements for the unoptimized lmboot function were not performed due to the extremely long time they would have taken)
+<br>
+References:<br>
+https://onlinecourses.science.psu.edu/stat501/node/382/ <br>
+https://www.itl.nist.gov/div898/handbook/pmd/section4/pmd431.htm <br>
+http://nitro.biosci.arizona.edu/courses/EEB581-2006/handouts/LinearI.pdf <br>

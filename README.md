@@ -18,7 +18,7 @@ The Rprof section is another way of profiling the 3 functions.
 <br>
 <br>
 The Microbenchmark section compares the execution times of the 3 functions and plots them.
-![Benchmarking Comparison nBoot 1e3](/Plots/Autoplot microbenchmark1e3.png) <br>
+![Benchmarking Comparison nBoot 1e3](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/Plots/Autoplot%20microbenchmark1e3.png) <br>
 The plot shows the min and maximum values of the time spent running the functions as well as the median. We can see that the lmBootOptmized is more efficient for nBoot = 1e3, but for bigger values such as 1e4 the lmBootParallel version is more optimal.
 <br>
 <br>

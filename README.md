@@ -1,6 +1,7 @@
 # MT5763-A2-TeamSharks
 Assignment 2 for Software for Data Analysis, Group repo
-Documentation and Analysis:<br>
+<br>
+# Documentation and Analysis:<br>
 The main file is the [benchmark.R](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/benchmark.R). To test the code we can simply execute in order the benchmark.R file.
 <br>
 The main file sources the other 3 functions needed, and creates some global variables required to call the functions. It starts by profiling the different functions using profvis, then we profiled the bootLM function (function called by the lmBootParallel) to check if we can optimize it.
@@ -22,7 +23,7 @@ In the estimations plot, we run the 3 functions for Age ~ Weight and plot the re
 The Multiple Covariates section shows an example of our lmBootPar function using multiple covariates and compare the results to the baseline as well.
 <br>
 
-Report:<br>
+# Report:<br>
 This repository contains 2 optimised functions [lmBootParallel.R](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/lmBootParallel.R "lmBootParallel") and [regBootOptimised.sas](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/regBootOptimised.sas). Their purpose is to perform non-parameteric bootstrap resamplings of datasets, estimating the parameters of a linear model fit to each resample. This provides samples from the distribution of values that each parameter can take. From the output, confidence intervals can be calculated as well as indicate the level of uncertainty in the point estimates for the parameters of the model.
 
 The R function lmBootParallel is used by specifying a dataset to perform the bootstrap on, the number of bootstraps to perform, as well as a list containing the indexes of the columns representing covariates and the response variable. This allows for an arbitrary number of covariates to be specified for use in the linear modelling. <br>

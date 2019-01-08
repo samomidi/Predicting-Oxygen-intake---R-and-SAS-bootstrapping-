@@ -1,5 +1,10 @@
-# MT5763-A2-TeamSharks
-Assignment 2 for Software for Data Analysis, Group repo
+
+# Tasks
+Modifying the SAS bootstrapping macro to be more efficient. Determine how much faster you have made it.
+This should have 95% confidence intervals for the mean, the mean estimate for each parameter and plots of the distributions of the bootstrap parameters. 
+
+Modifying the the R bootstrapping code to be more efficient. Using parallelised methods at some level. Profile both the original and final versions as well as determining the overall speed increase. 
+
 <br>
 # Documentation and Analysis:<br>
 The main file is the [benchmark.R](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/benchmark.R). To test the code we can simply execute in order the benchmark.R file.

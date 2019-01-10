@@ -6,7 +6,8 @@ This should have 95% confidence intervals for the mean, the mean estimate for ea
 Modifying the the R bootstrapping code to be more efficient. Using parallelised methods at some level. Profile both the original and final versions as well as determining the overall speed increase. 
 
 <br>
-# Documentation and Analysis:<br>
+# Documentation and Analysis:
+<br>
 The main file is the [benchmark.R](https://github.com/MarcNohra/MT5763-A2-TeamSharks/blob/master/code/benchmark.R). To test the code we can simply execute in order the benchmark.R file.
 <br>
 <br>
